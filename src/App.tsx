@@ -7,6 +7,7 @@ import PremiumPaywall from './components/PremiumPaywall'
 import WeeklySummary from './components/WeeklySummary'
 import ReminderSettingsPanel from './components/ReminderSettings'
 import { FREE_HISTORY_DAYS, MOOD_BG_GRADIENT } from './types'
+import type { TagId } from './types'
 import {
   calcStreak,
   getReminderSettings,
@@ -19,10 +20,12 @@ import {
 } from './storage'
 import { maybeShowReminder } from './notifications'
 import { shareEntry } from './share'
+import { useI18n } from './i18n'
 
 type Tab = 'today' | 'history' | 'report' | 'settings'
 
 function App() {
+  const { t, flag, code, cycleLang } = useI18n()
   const [entries, setEntries] = useState(loadEntries())
   const [premium, setPremiumState] = useState(isPremium())
   const [tab, setTab] = useState<Tab>('today')
@@ -32,7 +35,7 @@ function App() {
   const today = todayKey()
   const todayEntry = entries[today]
 
-  const handleSave = (mood: number, energy: number, note: string, tags: string[], photo?: string) => {
+  const handleSave = (mood: number, energy: number, note: string, tags: TagId[], photo?: string) => {
     const next = saveEntry({ date: today, mood, energy, note, tags, photo, createdAt: Date.now() })
     setEntries({ ...next })
   }
@@ -53,7 +56,10 @@ function App() {
   }
 
   useEffect(() => {
-    document.title = '데일리바이브 · Daily Vibe'
+    document.title = t.appName
+  }, [t])
+
+  useEffect(() => {
     const reminder = getReminderSettings()
     if (reminder.enabled) {
       maybeShowReminder(!!todayEntry, reminder.time)
@@ -66,9 +72,19 @@ function App() {
     <div
       className={`mx-auto flex min-h-screen max-w-md flex-col bg-gradient-to-b text-white transition-colors duration-700 ${bgGradient}`}
     >
-      <header className="px-5 pb-2 pt-6">
-        <h1 className="text-xl font-bold">데일리바이브 ✨</h1>
-        <p className="text-xs text-white/40">오늘의 기분과 에너지를 기록해보세요</p>
+      <header className="flex items-start justify-between px-5 pb-2 pt-6">
+        <div>
+          <h1 className="text-xl font-bold">{t.appName}</h1>
+          <p className="text-xs text-white/40">{t.appTagline}</p>
+        </div>
+        <button
+          onClick={cycleLang}
+          className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium active:scale-95"
+          aria-label="switch language"
+        >
+          <span>{flag}</span>
+          <span>{code}</span>
+        </button>
       </header>
 
       <main className="flex-1 overflow-y-auto px-5 pb-24 pt-2">
@@ -82,7 +98,7 @@ function App() {
                 onClick={() => shareEntry(todayEntry)}
                 className="rounded-2xl bg-white/10 py-3 text-sm font-medium active:scale-95"
               >
-                오늘의 바이브 공유하기 📤
+                {t.share.button}
               </button>
             )}
           </div>
@@ -108,9 +124,9 @@ function App() {
         {tab === 'settings' && (
           <div className="flex flex-col gap-4">
             <div className="rounded-2xl bg-white/5 p-4">
-              <p className="text-sm font-medium">멤버십</p>
+              <p className="text-sm font-medium">{t.settings.membership}</p>
               <p className="mt-1 text-xs text-white/50">
-                {premium ? '프리미엄 이용 중 ✨' : '무료 플랜 이용 중'}
+                {premium ? t.settings.premiumActive : t.settings.freeActive}
               </p>
             </div>
             <ReminderSettingsPanel initial={getReminderSettings()} />
@@ -119,7 +135,7 @@ function App() {
               disabled={!premium}
               className="rounded-2xl bg-white/5 py-3 text-sm font-medium disabled:opacity-30"
             >
-              데이터 내보내기 (JSON) {!premium && '· 프리미엄'}
+              {t.settings.exportButton} {!premium && t.settings.exportPremiumSuffix}
             </button>
             {!premium && <PremiumPaywall onUnlock={handleUnlock} />}
           </div>
@@ -129,10 +145,10 @@ function App() {
       <nav className="fixed bottom-0 left-1/2 flex w-full max-w-md -translate-x-1/2 border-t border-white/10 bg-[#0f0f17]/95 backdrop-blur">
         {(
           [
-            ['today', '오늘', '📝'],
-            ['history', '기록', '📅'],
-            ['report', '리포트', '📊'],
-            ['settings', '설정', '⚙️']
+            ['today', t.nav.today, '📝'],
+            ['history', t.nav.history, '📅'],
+            ['report', t.nav.report, '📊'],
+            ['settings', t.nav.settings, '⚙️']
           ] as const
         ).map(([key, label, icon]) => (
           <button

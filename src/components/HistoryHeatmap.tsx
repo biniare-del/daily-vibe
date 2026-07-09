@@ -1,5 +1,6 @@
 import type { EntryMap } from '../types'
 import { todayKey } from '../storage'
+import { useI18n } from '../i18n'
 
 interface Props {
   entries: EntryMap
@@ -16,6 +17,7 @@ const MOOD_BG = [
 ]
 
 export default function HistoryHeatmap({ entries, days }: Props) {
+  const { t } = useI18n()
   const cells: { key: string; mood: number }[] = []
   const cursor = new Date()
   cursor.setDate(cursor.getDate() - (days - 1))
@@ -53,7 +55,7 @@ export default function HistoryHeatmap({ entries, days }: Props) {
           </div>
         ))}
       </div>
-      <p className="mt-1 text-right text-[11px] text-white/30">최근 {days}일</p>
+      <p className="mt-1 text-right text-[11px] text-white/30">{t.history.recentDays(days)}</p>
     </div>
   )
 }

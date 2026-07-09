@@ -1,15 +1,17 @@
 import type { EntryMap } from '../types'
-import { MOOD_EMOJI, WEEKDAY_LABELS } from '../types'
+import { MOOD_EMOJI, TAG_IDS } from '../types'
 import { getMoodByTag, getMoodByWeekday } from '../stats'
+import { useI18n } from '../i18n'
 
 interface Props {
   entries: EntryMap
 }
 
 export default function MonthlyReport({ entries }: Props) {
+  const { t } = useI18n()
   const all = Object.values(entries)
   if (all.length === 0) {
-    return <p className="text-sm text-white/40">아직 기록이 없어요. 체크인을 시작해보세요!</p>
+    return <p className="text-sm text-white/40">{t.report.empty}</p>
   }
 
   const avgMood = all.reduce((s, e) => s + e.mood, 0) / all.length
@@ -25,16 +27,16 @@ export default function MonthlyReport({ entries }: Props) {
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-white/5 p-4 text-center">
           <p className="text-xl font-bold">{avgMood.toFixed(1)} / 5</p>
-          <p className="mt-1 text-xs text-white/50">평균 기분</p>
+          <p className="mt-1 text-xs text-white/50">{t.report.avgMood}</p>
         </div>
         <div className="rounded-2xl bg-white/5 p-4 text-center">
           <p className="text-xl font-bold">{avgEnergy.toFixed(1)} / 5</p>
-          <p className="mt-1 text-xs text-white/50">평균 에너지</p>
+          <p className="mt-1 text-xs text-white/50">{t.report.avgEnergy}</p>
         </div>
       </div>
 
       <div className="rounded-2xl bg-white/5 p-4">
-        <p className="mb-2 text-xs font-medium text-white/50">기분 분포</p>
+        <p className="mb-2 text-xs font-medium text-white/50">{t.report.moodDistribution}</p>
         <div className="flex items-end gap-2">
           {moodCounts.map((count, i) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
@@ -49,14 +51,14 @@ export default function MonthlyReport({ entries }: Props) {
       </div>
 
       <div className="rounded-2xl bg-white/5 p-4">
-        <p className="text-xs text-white/50">최고의 하루</p>
+        <p className="text-xs text-white/50">{t.report.bestDay}</p>
         <p className="mt-1 text-sm">
           {best.date} {MOOD_EMOJI[best.mood - 1]} {best.note && `· ${best.note}`}
         </p>
       </div>
 
       <div className="rounded-2xl bg-white/5 p-4">
-        <p className="mb-2 text-xs font-medium text-white/50">요일별 평균 기분</p>
+        <p className="mb-2 text-xs font-medium text-white/50">{t.report.moodByWeekday}</p>
         <div className="flex items-end gap-2">
           {byWeekday.map((moodAvg, i) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
@@ -64,7 +66,7 @@ export default function MonthlyReport({ entries }: Props) {
                 className="w-full rounded-t bg-vibe-500"
                 style={{ height: `${moodAvg ? 8 + (moodAvg / 5) * 60 : 4}px` }}
               />
-              <span className="text-xs text-white/50">{WEEKDAY_LABELS[i]}</span>
+              <span className="text-xs text-white/50">{t.weekdays[i]}</span>
             </div>
           ))}
         </div>
@@ -72,13 +74,14 @@ export default function MonthlyReport({ entries }: Props) {
 
       {byTag.length > 0 && (
         <div className="rounded-2xl bg-white/5 p-4">
-          <p className="mb-2 text-xs font-medium text-white/50">태그별 평균 기분</p>
+          <p className="mb-2 text-xs font-medium text-white/50">{t.report.moodByTag}</p>
           <div className="flex flex-col gap-2">
-            {byTag.map(({ tag, avgMood: tagAvg, count }) => (
-              <div key={tag} className="flex items-center justify-between text-sm">
-                <span className="text-white/70">{tag}</span>
+            {byTag.map(({ tagId, avgMood: tagAvg, count }) => (
+              <div key={tagId} className="flex items-center justify-between text-sm">
+                <span className="text-white/70">{t.tags[TAG_IDS.indexOf(tagId)]}</span>
                 <span className="text-white/40">
-                  {tagAvg.toFixed(1)} / 5 · {count}회
+                  {tagAvg.toFixed(1)} / 5 · {count}
+                  {t.report.times}
                 </span>
               </div>
             ))}

@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react'
-import { MOOD_EMOJI, MOOD_LABELS, ENERGY_EMOJI, TAGS } from '../types'
-import type { VibeEntry } from '../types'
+import { MOOD_EMOJI, ENERGY_EMOJI, TAG_IDS } from '../types'
+import type { TagId, VibeEntry } from '../types'
+import { useI18n } from '../i18n'
 
 interface Props {
   existing?: VibeEntry
-  onSave: (mood: number, energy: number, note: string, tags: string[], photo?: string) => void
+  onSave: (mood: number, energy: number, note: string, tags: TagId[], photo?: string) => void
 }
 
 const MAX_PHOTO_DIMENSION = 640
@@ -32,16 +33,17 @@ function resizePhoto(file: File): Promise<string> {
 }
 
 export default function CheckIn({ existing, onSave }: Props) {
+  const { t } = useI18n()
   const [mood, setMood] = useState(existing?.mood ?? 3)
   const [energy, setEnergy] = useState(existing?.energy ?? 3)
   const [note, setNote] = useState(existing?.note ?? '')
-  const [tags, setTags] = useState<string[]>(existing?.tags ?? [])
+  const [tags, setTags] = useState<TagId[]>(existing?.tags ?? [])
   const [photo, setPhoto] = useState<string | undefined>(existing?.photo)
   const [saved, setSaved] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const toggleTag = (tag: string) => {
-    setTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]))
+  const toggleTag = (tagId: TagId) => {
+    setTags((prev) => (prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId]))
   }
 
   const handlePhotoPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +62,7 @@ export default function CheckIn({ existing, onSave }: Props) {
   return (
     <div className="flex flex-col gap-6">
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">오늘 기분은 어때요?</h2>
+        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.moodQuestion}</h2>
         <div className="flex justify-between gap-2">
           {MOOD_EMOJI.map((emoji, i) => (
             <button
@@ -71,17 +73,17 @@ export default function CheckIn({ existing, onSave }: Props) {
                   ? 'bg-vibe-600 scale-105 shadow-lg shadow-vibe-600/30'
                   : 'bg-white/5 hover:bg-white/10'
               }`}
-              aria-label={MOOD_LABELS[i]}
+              aria-label={t.moodLabels[i]}
             >
               {emoji}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-center text-xs text-white/40">{MOOD_LABELS[mood - 1]}</p>
+        <p className="mt-2 text-center text-xs text-white/40">{t.moodLabels[mood - 1]}</p>
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">에너지 레벨은요?</h2>
+        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.energyQuestion}</h2>
         <input
           type="range"
           min={1}
@@ -94,43 +96,43 @@ export default function CheckIn({ existing, onSave }: Props) {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">오늘에 태그를 붙여볼까요? (선택)</h2>
+        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.tagQuestion}</h2>
         <div className="flex flex-wrap gap-2">
-          {TAGS.map((tag) => (
+          {TAG_IDS.map((tagId, i) => (
             <button
-              key={tag}
-              onClick={() => toggleTag(tag)}
+              key={tagId}
+              onClick={() => toggleTag(tagId)}
               className={`rounded-full px-3 py-1.5 text-xs transition ${
-                tags.includes(tag) ? 'bg-vibe-600 text-white' : 'bg-white/5 text-white/60'
+                tags.includes(tagId) ? 'bg-vibe-600 text-white' : 'bg-white/5 text-white/60'
               }`}
             >
-              {tag}
+              {t.tags[i]}
             </button>
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">한 줄 메모 (선택)</h2>
+        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.noteLabel}</h2>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           maxLength={200}
           rows={3}
-          placeholder="오늘 있었던 일을 짧게 남겨보세요"
+          placeholder={t.checkin.notePlaceholder}
           className="w-full resize-none rounded-2xl bg-white/5 p-3 text-sm outline-none placeholder:text-white/30 focus:ring-2 focus:ring-vibe-500"
         />
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">사진 한 장 (선택)</h2>
+        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.photoLabel}</h2>
         {photo ? (
           <div className="relative w-fit">
-            <img src={photo} alt="오늘의 사진" className="h-28 w-28 rounded-2xl object-cover" />
+            <img src={photo} alt={t.checkin.photoAlt} className="h-28 w-28 rounded-2xl object-cover" />
             <button
               onClick={() => setPhoto(undefined)}
               className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-xs"
-              aria-label="사진 삭제"
+              aria-label={t.checkin.photoRemove}
             >
               ✕
             </button>
@@ -157,7 +159,7 @@ export default function CheckIn({ existing, onSave }: Props) {
         onClick={handleSave}
         className="rounded-2xl bg-vibe-600 py-4 text-base font-semibold shadow-lg shadow-vibe-600/30 transition active:scale-95"
       >
-        {saved ? '저장됐어요! ✅' : existing ? '오늘 기록 수정하기' : '오늘의 바이브 저장하기'}
+        {saved ? t.checkin.saved : existing ? t.checkin.saveEdit : t.checkin.saveDefault}
       </button>
     </div>
   )

@@ -1,16 +1,18 @@
+export const TAG_IDS = ['exercise', 'work', 'friends', 'family', 'rest', 'love', 'health', 'other'] as const
+export type TagId = (typeof TAG_IDS)[number]
+
 export interface VibeEntry {
   date: string // YYYY-MM-DD
   mood: number // 1-5
   energy: number // 1-5
   note: string
-  tags: string[]
+  tags: TagId[]
   photo?: string // data URL
   createdAt: number
 }
 
 export type EntryMap = Record<string, VibeEntry>
 
-export const MOOD_LABELS = ['힘들어요', '별로예요', '그저그래요', '좋아요', '최고예요'] as const
 export const MOOD_EMOJI = ['😞', '😕', '😐', '🙂', '😄'] as const
 export const ENERGY_EMOJI = ['🔋', '🔋🔋', '🔋🔋🔋', '🔋🔋🔋🔋', '⚡️'] as const
 
@@ -21,9 +23,5 @@ export const MOOD_BG_GRADIENT = [
   'from-vibe-700/60 to-slate-950',
   'from-fuchsia-700/50 to-slate-950'
 ] as const
-
-export const TAGS = ['운동', '일/공부', '친구', '가족', '휴식', '연애', '건강', '기타'] as const
-
-export const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'] as const
 
 export const FREE_HISTORY_DAYS = 30

@@ -1,4 +1,4 @@
-import type { EntryMap, VibeEntry } from './types'
+import type { EntryMap, TagId, VibeEntry } from './types'
 import { todayKey } from './storage'
 
 function entriesInLastDays(entries: EntryMap, days: number, offsetDays = 0): VibeEntry[] {
@@ -49,15 +49,15 @@ export function getMoodByWeekday(entries: EntryMap): (number | null)[] {
   return buckets.map((b) => avg(b))
 }
 
-export function getMoodByTag(entries: EntryMap): { tag: string; avgMood: number; count: number }[] {
-  const buckets = new Map<string, number[]>()
+export function getMoodByTag(entries: EntryMap): { tagId: TagId; avgMood: number; count: number }[] {
+  const buckets = new Map<TagId, number[]>()
   Object.values(entries).forEach((e) => {
-    ;(e.tags ?? []).forEach((tag) => {
-      if (!buckets.has(tag)) buckets.set(tag, [])
-      buckets.get(tag)!.push(e.mood)
+    ;(e.tags ?? []).forEach((tagId) => {
+      if (!buckets.has(tagId)) buckets.set(tagId, [])
+      buckets.get(tagId)!.push(e.mood)
     })
   })
   return Array.from(buckets.entries())
-    .map(([tag, moods]) => ({ tag, avgMood: avg(moods) ?? 0, count: moods.length }))
+    .map(([tagId, moods]) => ({ tagId, avgMood: avg(moods) ?? 0, count: moods.length }))
     .sort((a, b) => b.count - a.count)
 }
