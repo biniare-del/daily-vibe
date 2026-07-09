@@ -4,8 +4,21 @@ import Streak from './components/Streak'
 import HistoryHeatmap from './components/HistoryHeatmap'
 import MonthlyReport from './components/MonthlyReport'
 import PremiumPaywall from './components/PremiumPaywall'
-import { FREE_HISTORY_DAYS } from './types'
-import { calcStreak, isPremium, loadEntries, saveEntry, setPremium, sortedDates, todayKey } from './storage'
+import WeeklySummary from './components/WeeklySummary'
+import ReminderSettingsPanel from './components/ReminderSettings'
+import { FREE_HISTORY_DAYS, MOOD_BG_GRADIENT } from './types'
+import {
+  calcStreak,
+  getReminderSettings,
+  isPremium,
+  loadEntries,
+  saveEntry,
+  setPremium,
+  sortedDates,
+  todayKey
+} from './storage'
+import { maybeShowReminder } from './notifications'
+import { shareEntry } from './share'
 
 type Tab = 'today' | 'history' | 'report' | 'settings'
 
@@ -17,9 +30,10 @@ function App() {
   const streak = useMemo(() => calcStreak(entries), [entries])
   const totalEntries = useMemo(() => sortedDates(entries).length, [entries])
   const today = todayKey()
+  const todayEntry = entries[today]
 
-  const handleSave = (mood: number, energy: number, note: string) => {
-    const next = saveEntry({ date: today, mood, energy, note, createdAt: Date.now() })
+  const handleSave = (mood: number, energy: number, note: string, tags: string[], photo?: string) => {
+    const next = saveEntry({ date: today, mood, energy, note, tags, photo, createdAt: Date.now() })
     setEntries({ ...next })
   }
 
@@ -40,10 +54,18 @@ function App() {
 
   useEffect(() => {
     document.title = '데일리바이브 · Daily Vibe'
+    const reminder = getReminderSettings()
+    if (reminder.enabled) {
+      maybeShowReminder(!!todayEntry, reminder.time)
+    }
   }, [])
 
+  const bgGradient = MOOD_BG_GRADIENT[(todayEntry?.mood ?? 3) - 1]
+
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-[#0f0f17] text-white">
+    <div
+      className={`mx-auto flex min-h-screen max-w-md flex-col bg-gradient-to-b text-white transition-colors duration-700 ${bgGradient}`}
+    >
       <header className="px-5 pb-2 pt-6">
         <h1 className="text-xl font-bold">데일리바이브 ✨</h1>
         <p className="text-xs text-white/40">오늘의 기분과 에너지를 기록해보세요</p>
@@ -53,7 +75,16 @@ function App() {
         {tab === 'today' && (
           <div className="flex flex-col gap-5">
             <Streak streak={streak} totalEntries={totalEntries} />
-            <CheckIn existing={entries[today]} onSave={handleSave} />
+            <WeeklySummary entries={entries} />
+            <CheckIn existing={todayEntry} onSave={handleSave} />
+            {todayEntry && (
+              <button
+                onClick={() => shareEntry(todayEntry)}
+                className="rounded-2xl bg-white/10 py-3 text-sm font-medium active:scale-95"
+              >
+                오늘의 바이브 공유하기 📤
+              </button>
+            )}
           </div>
         )}
 
@@ -82,6 +113,7 @@ function App() {
                 {premium ? '프리미엄 이용 중 ✨' : '무료 플랜 이용 중'}
               </p>
             </div>
+            <ReminderSettingsPanel initial={getReminderSettings()} />
             <button
               onClick={handleExport}
               disabled={!premium}

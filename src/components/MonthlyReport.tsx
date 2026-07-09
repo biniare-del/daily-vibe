@@ -1,5 +1,6 @@
 import type { EntryMap } from '../types'
-import { MOOD_EMOJI } from '../types'
+import { MOOD_EMOJI, WEEKDAY_LABELS } from '../types'
+import { getMoodByTag, getMoodByWeekday } from '../stats'
 
 interface Props {
   entries: EntryMap
@@ -16,6 +17,8 @@ export default function MonthlyReport({ entries }: Props) {
   const best = all.reduce((a, b) => (b.mood > a.mood ? b : a))
   const moodCounts = [0, 0, 0, 0, 0]
   all.forEach((e) => moodCounts[e.mood - 1]++)
+  const byWeekday = getMoodByWeekday(entries)
+  const byTag = getMoodByTag(entries)
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,6 +54,37 @@ export default function MonthlyReport({ entries }: Props) {
           {best.date} {MOOD_EMOJI[best.mood - 1]} {best.note && `· ${best.note}`}
         </p>
       </div>
+
+      <div className="rounded-2xl bg-white/5 p-4">
+        <p className="mb-2 text-xs font-medium text-white/50">요일별 평균 기분</p>
+        <div className="flex items-end gap-2">
+          {byWeekday.map((moodAvg, i) => (
+            <div key={i} className="flex flex-1 flex-col items-center gap-1">
+              <div
+                className="w-full rounded-t bg-vibe-500"
+                style={{ height: `${moodAvg ? 8 + (moodAvg / 5) * 60 : 4}px` }}
+              />
+              <span className="text-xs text-white/50">{WEEKDAY_LABELS[i]}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {byTag.length > 0 && (
+        <div className="rounded-2xl bg-white/5 p-4">
+          <p className="mb-2 text-xs font-medium text-white/50">태그별 평균 기분</p>
+          <div className="flex flex-col gap-2">
+            {byTag.map(({ tag, avgMood: tagAvg, count }) => (
+              <div key={tag} className="flex items-center justify-between text-sm">
+                <span className="text-white/70">{tag}</span>
+                <span className="text-white/40">
+                  {tagAvg.toFixed(1)} / 5 · {count}회
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

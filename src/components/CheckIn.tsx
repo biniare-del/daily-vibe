@@ -1,20 +1,58 @@
-import { useState } from 'react'
-import { MOOD_EMOJI, MOOD_LABELS, ENERGY_EMOJI } from '../types'
+import { useRef, useState } from 'react'
+import { MOOD_EMOJI, MOOD_LABELS, ENERGY_EMOJI, TAGS } from '../types'
 import type { VibeEntry } from '../types'
 
 interface Props {
   existing?: VibeEntry
-  onSave: (mood: number, energy: number, note: string) => void
+  onSave: (mood: number, energy: number, note: string, tags: string[], photo?: string) => void
+}
+
+const MAX_PHOTO_DIMENSION = 640
+
+function resizePhoto(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = reject
+    reader.onload = () => {
+      const img = new Image()
+      img.onerror = reject
+      img.onload = () => {
+        const scale = Math.min(1, MAX_PHOTO_DIMENSION / Math.max(img.width, img.height))
+        const canvas = document.createElement('canvas')
+        canvas.width = img.width * scale
+        canvas.height = img.height * scale
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL('image/jpeg', 0.7))
+      }
+      img.src = reader.result as string
+    }
+    reader.readAsDataURL(file)
+  })
 }
 
 export default function CheckIn({ existing, onSave }: Props) {
   const [mood, setMood] = useState(existing?.mood ?? 3)
   const [energy, setEnergy] = useState(existing?.energy ?? 3)
   const [note, setNote] = useState(existing?.note ?? '')
+  const [tags, setTags] = useState<string[]>(existing?.tags ?? [])
+  const [photo, setPhoto] = useState<string | undefined>(existing?.photo)
   const [saved, setSaved] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const toggleTag = (tag: string) => {
+    setTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]))
+  }
+
+  const handlePhotoPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const dataUrl = await resizePhoto(file)
+    setPhoto(dataUrl)
+  }
 
   const handleSave = () => {
-    onSave(mood, energy, note)
+    onSave(mood, energy, note, tags, photo)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
   }
@@ -56,6 +94,23 @@ export default function CheckIn({ existing, onSave }: Props) {
       </section>
 
       <section>
+        <h2 className="mb-3 text-sm font-medium text-white/60">오늘에 태그를 붙여볼까요? (선택)</h2>
+        <div className="flex flex-wrap gap-2">
+          {TAGS.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => toggleTag(tag)}
+              className={`rounded-full px-3 py-1.5 text-xs transition ${
+                tags.includes(tag) ? 'bg-vibe-600 text-white' : 'bg-white/5 text-white/60'
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section>
         <h2 className="mb-3 text-sm font-medium text-white/60">한 줄 메모 (선택)</h2>
         <textarea
           value={note}
@@ -64,6 +119,37 @@ export default function CheckIn({ existing, onSave }: Props) {
           rows={3}
           placeholder="오늘 있었던 일을 짧게 남겨보세요"
           className="w-full resize-none rounded-2xl bg-white/5 p-3 text-sm outline-none placeholder:text-white/30 focus:ring-2 focus:ring-vibe-500"
+        />
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-sm font-medium text-white/60">사진 한 장 (선택)</h2>
+        {photo ? (
+          <div className="relative w-fit">
+            <img src={photo} alt="오늘의 사진" className="h-28 w-28 rounded-2xl object-cover" />
+            <button
+              onClick={() => setPhoto(undefined)}
+              className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-xs"
+              aria-label="사진 삭제"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex h-28 w-28 items-center justify-center rounded-2xl bg-white/5 text-2xl text-white/40"
+          >
+            📷
+          </button>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handlePhotoPick}
+          className="hidden"
         />
       </section>
 

@@ -2,6 +2,14 @@ import type { EntryMap, VibeEntry } from './types'
 
 const ENTRIES_KEY = 'daily-vibe:entries'
 const PREMIUM_KEY = 'daily-vibe:premium'
+const REMINDER_KEY = 'daily-vibe:reminder'
+
+export interface ReminderSettings {
+  enabled: boolean
+  time: string // "HH:MM"
+}
+
+const DEFAULT_REMINDER: ReminderSettings = { enabled: false, time: '20:00' }
 
 export function todayKey(d = new Date()): string {
   const y = d.getFullYear()
@@ -50,4 +58,17 @@ export function calcStreak(entries: EntryMap): number {
 
 export function sortedDates(entries: EntryMap): string[] {
   return Object.keys(entries).sort((a, b) => (a < b ? 1 : -1))
+}
+
+export function getReminderSettings(): ReminderSettings {
+  try {
+    const raw = localStorage.getItem(REMINDER_KEY)
+    return raw ? { ...DEFAULT_REMINDER, ...JSON.parse(raw) } : DEFAULT_REMINDER
+  } catch {
+    return DEFAULT_REMINDER
+  }
+}
+
+export function setReminderSettings(settings: ReminderSettings): void {
+  localStorage.setItem(REMINDER_KEY, JSON.stringify(settings))
 }
