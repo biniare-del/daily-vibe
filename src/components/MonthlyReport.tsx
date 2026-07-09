@@ -2,6 +2,7 @@ import type { EntryMap } from '../types'
 import { MOOD_EMOJI, TAG_IDS } from '../types'
 import { getMoodByTag, getMoodByWeekday } from '../stats'
 import { useI18n } from '../i18n'
+import Card from './Card'
 
 interface Props {
   entries: EntryMap
@@ -25,56 +26,56 @@ export default function MonthlyReport({ entries }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-white/5 p-4 text-center">
-          <p className="text-xl font-bold">{avgMood.toFixed(1)} / 5</p>
+        <Card className="text-center">
+          <p className="text-2xl font-bold tracking-tight">{avgMood.toFixed(1)} / 5</p>
           <p className="mt-1 text-xs text-white/50">{t.report.avgMood}</p>
-        </div>
-        <div className="rounded-2xl bg-white/5 p-4 text-center">
-          <p className="text-xl font-bold">{avgEnergy.toFixed(1)} / 5</p>
+        </Card>
+        <Card className="text-center">
+          <p className="text-2xl font-bold tracking-tight">{avgEnergy.toFixed(1)} / 5</p>
           <p className="mt-1 text-xs text-white/50">{t.report.avgEnergy}</p>
-        </div>
+        </Card>
       </div>
 
-      <div className="rounded-2xl bg-white/5 p-4">
-        <p className="mb-2 text-xs font-medium text-white/50">{t.report.moodDistribution}</p>
+      <Card>
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">{t.report.moodDistribution}</p>
         <div className="flex items-end gap-2">
           {moodCounts.map((count, i) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
               <div
-                className="w-full rounded-t bg-vibe-500"
+                className="w-full rounded-t bg-gradient-to-t from-vibe-700 to-vibe-400"
                 style={{ height: `${8 + (count / all.length) * 60}px` }}
               />
               <span className="text-xs">{MOOD_EMOJI[i]}</span>
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
-      <div className="rounded-2xl bg-white/5 p-4">
-        <p className="text-xs text-white/50">{t.report.bestDay}</p>
-        <p className="mt-1 text-sm">
+      <Card>
+        <p className="text-xs font-medium uppercase tracking-wide text-white/40">{t.report.bestDay}</p>
+        <p className="mt-1.5 text-sm">
           {best.date} {MOOD_EMOJI[best.mood - 1]} {best.note && `· ${best.note}`}
         </p>
-      </div>
+      </Card>
 
-      <div className="rounded-2xl bg-white/5 p-4">
-        <p className="mb-2 text-xs font-medium text-white/50">{t.report.moodByWeekday}</p>
+      <Card>
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">{t.report.moodByWeekday}</p>
         <div className="flex items-end gap-2">
           {byWeekday.map((moodAvg, i) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
               <div
-                className="w-full rounded-t bg-vibe-500"
+                className="w-full rounded-t bg-gradient-to-t from-vibe-700 to-vibe-400"
                 style={{ height: `${moodAvg ? 8 + (moodAvg / 5) * 60 : 4}px` }}
               />
               <span className="text-xs text-white/50">{t.weekdays[i]}</span>
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {byTag.length > 0 && (
-        <div className="rounded-2xl bg-white/5 p-4">
-          <p className="mb-2 text-xs font-medium text-white/50">{t.report.moodByTag}</p>
+        <Card>
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">{t.report.moodByTag}</p>
           <div className="flex flex-col gap-2">
             {byTag.map(({ tagId, avgMood: tagAvg, count }) => (
               <div key={tagId} className="flex items-center justify-between text-sm">
@@ -86,7 +87,7 @@ export default function MonthlyReport({ entries }: Props) {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
     </div>
   )

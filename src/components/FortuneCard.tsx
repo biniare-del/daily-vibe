@@ -3,17 +3,18 @@ import type { Profile } from '../storage'
 import { todayKey } from '../storage'
 import { getLottoNumbers, getMbtiFortune, getZodiacFortune, getZodiacSign } from '../fortune'
 import { useI18n } from '../i18n'
+import Card from './Card'
 
 interface Props {
   profile: Profile
 }
 
 function lottoBallColor(n: number): string {
-  if (n <= 10) return 'bg-yellow-500'
-  if (n <= 20) return 'bg-blue-500'
-  if (n <= 30) return 'bg-red-500'
-  if (n <= 40) return 'bg-slate-500'
-  return 'bg-green-500'
+  if (n <= 10) return 'bg-gradient-to-b from-yellow-400 to-yellow-600'
+  if (n <= 20) return 'bg-gradient-to-b from-blue-400 to-blue-600'
+  if (n <= 30) return 'bg-gradient-to-b from-red-400 to-red-600'
+  if (n <= 40) return 'bg-gradient-to-b from-slate-400 to-slate-600'
+  return 'bg-gradient-to-b from-green-400 to-green-600'
 }
 
 export default function FortuneCard({ profile }: Props) {
@@ -45,8 +46,8 @@ export default function FortuneCard({ profile }: Props) {
   }
 
   return (
-    <div className="rounded-2xl bg-white/5 p-4">
-      <p className="mb-2 text-xs font-medium text-white/50">{t.daily.fortuneTitle}</p>
+    <Card>
+      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">{t.daily.fortuneTitle}</p>
 
       <div className="mb-3">
         <p className="mb-1.5 text-xs text-white/40">{t.daily.lottoLabel}</p>
@@ -54,7 +55,7 @@ export default function FortuneCard({ profile }: Props) {
           {numbers.map((n) => (
             <span
               key={n}
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white ${lottoBallColor(n)}`}
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white shadow-md ${lottoBallColor(n)}`}
             >
               {n}
             </span>
@@ -65,6 +66,6 @@ export default function FortuneCard({ profile }: Props) {
 
       <div className="mb-3 border-t border-white/10 pt-3">{zodiacBlock}</div>
       <div className="border-t border-white/10 pt-3">{mbtiBlock}</div>
-    </div>
+    </Card>
   )
 }

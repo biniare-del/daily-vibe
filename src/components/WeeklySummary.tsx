@@ -1,6 +1,7 @@
 import type { EntryMap } from '../types'
 import { getWeeklySummary } from '../stats'
 import { useI18n } from '../i18n'
+import Card from './Card'
 
 export default function WeeklySummary({ entries }: { entries: EntryMap }) {
   const { t } = useI18n()
@@ -18,12 +19,12 @@ export default function WeeklySummary({ entries }: { entries: EntryMap }) {
           : t.weekly.flat
 
   return (
-    <div className="rounded-2xl bg-white/5 p-4">
-      <p className="text-xs font-medium text-white/50">{t.weekly.title}</p>
-      <p className="mt-1 text-lg font-semibold">
+    <Card>
+      <p className="text-xs font-medium uppercase tracking-wide text-white/40">{t.weekly.title}</p>
+      <p className="mt-1.5 text-lg font-semibold tracking-tight">
         {t.weekly.summaryLine(thisWeekAvgMood?.toFixed(1) ?? '-', thisWeekCount)}
       </p>
       <p className="mt-1 text-xs text-white/40">{deltaText}</p>
-    </div>
+    </Card>
   )
 }

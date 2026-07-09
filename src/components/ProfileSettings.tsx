@@ -4,6 +4,7 @@ import type { MbtiType } from '../content/mbti'
 import type { Profile } from '../storage'
 import { setProfile } from '../storage'
 import { useI18n } from '../i18n'
+import Card from './Card'
 
 interface Props {
   initial: Profile
@@ -25,7 +26,7 @@ export default function ProfileSettings({ initial, onSave }: Props) {
   }
 
   return (
-    <div className="rounded-2xl bg-white/5 p-4">
+    <Card>
       <p className="mb-3 text-sm font-medium">{t.profile.title}</p>
 
       <label className="mb-1 block text-xs text-white/50">{t.profile.birthdayLabel}</label>
@@ -33,14 +34,14 @@ export default function ProfileSettings({ initial, onSave }: Props) {
         type="date"
         value={birthday}
         onChange={(e) => setBirthday(e.target.value)}
-        className="mb-3 w-full rounded-xl bg-white/5 p-2 text-sm"
+        className="mb-3 w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-sm"
       />
 
       <label className="mb-1 block text-xs text-white/50">{t.profile.mbtiLabel}</label>
       <select
         value={mbti}
         onChange={(e) => setMbti(e.target.value as MbtiType | '')}
-        className="mb-3 w-full rounded-xl bg-white/5 p-2 text-sm"
+        className="mb-3 w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-sm"
       >
         <option value="">{t.profile.mbtiPlaceholder}</option>
         {MBTI_TYPES.map((type) => (
@@ -52,10 +53,10 @@ export default function ProfileSettings({ initial, onSave }: Props) {
 
       <button
         onClick={handleSave}
-        className="w-full rounded-xl bg-vibe-600 py-2.5 text-sm font-semibold active:scale-95"
+        className="w-full rounded-xl bg-gradient-to-r from-vibe-600 to-vibe-500 py-2.5 text-sm font-semibold shadow-glow transition active:scale-95"
       >
         {saved ? t.profile.saved : t.profile.save}
       </button>
-    </div>
+    </Card>
   )
 }

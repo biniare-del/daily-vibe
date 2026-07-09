@@ -46,7 +46,7 @@ export default function HistoryHeatmap({ entries, days }: Props) {
                 <div
                   key={di}
                   title={`${cell.key}${cell.mood ? ` · mood ${cell.mood}` : ''}`}
-                  className={`h-3.5 w-3.5 rounded-sm ${MOOD_BG[cell.mood]}`}
+                  className={`h-3.5 w-3.5 rounded-[3px] transition-transform hover:scale-125 ${MOOD_BG[cell.mood]}`}
                 />
               ) : (
                 <div key={di} className="h-3.5 w-3.5" />

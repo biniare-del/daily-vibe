@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { MOOD_EMOJI, ENERGY_EMOJI, TAG_IDS } from '../types'
 import type { TagId, VibeEntry } from '../types'
 import { useI18n } from '../i18n'
+import Card from './Card'
 
 interface Props {
   existing?: VibeEntry
@@ -60,18 +61,18 @@ export default function CheckIn({ existing, onSave }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <Card className="flex flex-col gap-6">
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.moodQuestion}</h2>
+        <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.moodQuestion}</h2>
         <div className="flex justify-between gap-2">
           {MOOD_EMOJI.map((emoji, i) => (
             <button
               key={i}
               onClick={() => setMood(i + 1)}
-              className={`flex-1 rounded-2xl py-3 text-2xl transition ${
+              className={`flex aspect-square flex-1 items-center justify-center rounded-2xl text-2xl transition-all duration-200 ${
                 mood === i + 1
-                  ? 'bg-vibe-600 scale-105 shadow-lg shadow-vibe-600/30'
-                  : 'bg-white/5 hover:bg-white/10'
+                  ? 'scale-110 bg-gradient-to-b from-vibe-500 to-vibe-700 shadow-glow ring-1 ring-white/20'
+                  : 'bg-white/[0.04] hover:bg-white/[0.08]'
               }`}
               aria-label={t.moodLabels[i]}
             >
@@ -79,33 +80,36 @@ export default function CheckIn({ existing, onSave }: Props) {
             </button>
           ))}
         </div>
-        <p className="mt-2 text-center text-xs text-white/40">{t.moodLabels[mood - 1]}</p>
+        <p className="mt-2.5 text-center text-xs text-white/40">{t.moodLabels[mood - 1]}</p>
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.energyQuestion}</h2>
+        <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.energyQuestion}</h2>
         <input
           type="range"
           min={1}
           max={5}
           value={energy}
           onChange={(e) => setEnergy(Number(e.target.value))}
-          className="w-full accent-vibe-500"
+          className="vibe-slider w-full"
         />
-        <p className="mt-1 text-center text-lg">{ENERGY_EMOJI[energy - 1]}</p>
+        <p className="mt-2 text-center text-lg">{ENERGY_EMOJI[energy - 1]}</p>
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.tagQuestion}</h2>
+        <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.tagQuestion}</h2>
         <div className="flex flex-wrap gap-2">
           {TAG_IDS.map((tagId, i) => (
             <button
               key={tagId}
               onClick={() => toggleTag(tagId)}
-              className={`rounded-full px-3 py-1.5 text-xs transition ${
-                tags.includes(tagId) ? 'bg-vibe-600 text-white' : 'bg-white/5 text-white/60'
+              className={`rounded-full border px-3 py-1.5 text-xs transition ${
+                tags.includes(tagId)
+                  ? 'border-vibe-400/50 bg-vibe-600/80 text-white shadow-[0_0_16px_-4px_rgba(139,92,246,0.6)]'
+                  : 'border-white/10 bg-white/[0.03] text-white/60'
               }`}
             >
+              {tags.includes(tagId) && <span className="mr-1">✓</span>}
               {t.tags[i]}
             </button>
           ))}
@@ -113,25 +117,29 @@ export default function CheckIn({ existing, onSave }: Props) {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.noteLabel}</h2>
+        <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.noteLabel}</h2>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           maxLength={200}
           rows={3}
           placeholder={t.checkin.notePlaceholder}
-          className="w-full resize-none rounded-2xl bg-white/5 p-3 text-sm outline-none placeholder:text-white/30 focus:ring-2 focus:ring-vibe-500"
+          className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-sm outline-none placeholder:text-white/30 focus:border-vibe-400/50 focus:ring-1 focus:ring-vibe-400/50"
         />
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-medium text-white/60">{t.checkin.photoLabel}</h2>
+        <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.photoLabel}</h2>
         {photo ? (
           <div className="relative w-fit">
-            <img src={photo} alt={t.checkin.photoAlt} className="h-28 w-28 rounded-2xl object-cover" />
+            <img
+              src={photo}
+              alt={t.checkin.photoAlt}
+              className="h-28 w-28 rounded-2xl border border-white/10 object-cover"
+            />
             <button
               onClick={() => setPhoto(undefined)}
-              className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-xs"
+              className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-xs backdrop-blur"
               aria-label={t.checkin.photoRemove}
             >
               ✕
@@ -140,7 +148,7 @@ export default function CheckIn({ existing, onSave }: Props) {
         ) : (
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex h-28 w-28 items-center justify-center rounded-2xl bg-white/5 text-2xl text-white/40"
+            className="flex h-28 w-28 items-center justify-center rounded-2xl border border-dashed border-white/15 bg-white/[0.03] text-2xl text-white/30 transition hover:bg-white/[0.06]"
           >
             📷
           </button>
@@ -157,10 +165,10 @@ export default function CheckIn({ existing, onSave }: Props) {
 
       <button
         onClick={handleSave}
-        className="rounded-2xl bg-vibe-600 py-4 text-base font-semibold shadow-lg shadow-vibe-600/30 transition active:scale-95"
+        className="rounded-2xl bg-gradient-to-r from-vibe-600 to-vibe-500 py-4 text-base font-semibold shadow-glow transition-transform active:scale-[0.98]"
       >
         {saved ? t.checkin.saved : existing ? t.checkin.saveEdit : t.checkin.saveDefault}
       </button>
-    </div>
+    </Card>
   )
 }

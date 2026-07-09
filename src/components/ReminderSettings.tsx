@@ -3,6 +3,7 @@ import type { ReminderSettings } from '../storage'
 import { setReminderSettings } from '../storage'
 import { notificationsSupported, requestNotificationPermission } from '../notifications'
 import { useI18n } from '../i18n'
+import Card from './Card'
 
 interface Props {
   initial: ReminderSettings
@@ -30,7 +31,7 @@ export default function ReminderSettingsPanel({ initial }: Props) {
   }
 
   return (
-    <div className="rounded-2xl bg-white/5 p-4">
+    <Card>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium">{t.reminder.title}</p>
@@ -55,7 +56,7 @@ export default function ReminderSettingsPanel({ initial }: Props) {
           type="time"
           value={settings.time}
           onChange={(e) => update({ ...settings, time: e.target.value })}
-          className="mt-3 w-full rounded-xl bg-white/5 p-2 text-sm"
+          className="mt-3 w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-sm"
         />
       )}
 
@@ -63,6 +64,6 @@ export default function ReminderSettingsPanel({ initial }: Props) {
         <p className="mt-2 text-[11px] text-red-300/70">{t.reminder.permissionDenied}</p>
       )}
       <p className="mt-2 text-[11px] text-white/30">{t.reminder.footnote}</p>
-    </div>
+    </Card>
   )
 }
