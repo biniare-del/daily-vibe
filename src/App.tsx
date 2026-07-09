@@ -6,10 +6,14 @@ import MonthlyReport from './components/MonthlyReport'
 import PremiumPaywall from './components/PremiumPaywall'
 import WeeklySummary from './components/WeeklySummary'
 import ReminderSettingsPanel from './components/ReminderSettings'
+import DailyEnglishCard from './components/DailyEnglishCard'
+import FortuneCard from './components/FortuneCard'
+import ProfileSettings from './components/ProfileSettings'
 import { FREE_HISTORY_DAYS, MOOD_BG_GRADIENT } from './types'
 import type { TagId } from './types'
 import {
   calcStreak,
+  getProfile,
   getReminderSettings,
   isPremium,
   loadEntries,
@@ -29,6 +33,7 @@ function App() {
   const [entries, setEntries] = useState(loadEntries())
   const [premium, setPremiumState] = useState(isPremium())
   const [tab, setTab] = useState<Tab>('today')
+  const [profile, setProfileState] = useState(getProfile())
 
   const streak = useMemo(() => calcStreak(entries), [entries])
   const totalEntries = useMemo(() => sortedDates(entries).length, [entries])
@@ -92,6 +97,8 @@ function App() {
           <div className="flex flex-col gap-5">
             <Streak streak={streak} totalEntries={totalEntries} />
             <WeeklySummary entries={entries} />
+            <DailyEnglishCard />
+            <FortuneCard profile={profile} />
             <CheckIn existing={todayEntry} onSave={handleSave} />
             {todayEntry && (
               <button
@@ -130,6 +137,7 @@ function App() {
               </p>
             </div>
             <ReminderSettingsPanel initial={getReminderSettings()} />
+            <ProfileSettings initial={profile} onSave={setProfileState} />
             <button
               onClick={handleExport}
               disabled={!premium}

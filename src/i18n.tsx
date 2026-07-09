@@ -68,6 +68,22 @@ export interface Dict {
     exportPremiumSuffix: string
   }
   share: { button: string }
+  daily: {
+    englishTitle: string
+    fortuneTitle: string
+    lottoLabel: string
+    lottoDisclaimer: string
+    zodiacPrompt: string
+    mbtiPrompt: string
+  }
+  profile: {
+    title: string
+    birthdayLabel: string
+    mbtiLabel: string
+    mbtiPlaceholder: string
+    save: string
+    saved: string
+  }
 }
 
 const ko: Dict = {
@@ -137,7 +153,23 @@ const ko: Dict = {
     exportButton: '데이터 내보내기 (JSON)',
     exportPremiumSuffix: '· 프리미엄'
   },
-  share: { button: '오늘의 바이브 공유하기 📤' }
+  share: { button: '오늘의 바이브 공유하기 📤' },
+  daily: {
+    englishTitle: '오늘의 영어 한마디',
+    fortuneTitle: '오늘의 운세',
+    lottoLabel: '오늘의 행운 번호',
+    lottoDisclaimer: '* 재미로만 봐주세요. 실제 로또 당첨 번호가 아니에요.',
+    zodiacPrompt: '생일을 입력하면 별자리 운세를 볼 수 있어요',
+    mbtiPrompt: 'MBTI를 입력하면 오늘의 한마디를 볼 수 있어요'
+  },
+  profile: {
+    title: '프로필',
+    birthdayLabel: '생일 (별자리 운세용)',
+    mbtiLabel: 'MBTI',
+    mbtiPlaceholder: '선택 안 함',
+    save: '저장하기',
+    saved: '저장됐어요! ✅'
+  }
 }
 
 const en: Dict = {
@@ -207,7 +239,23 @@ const en: Dict = {
     exportButton: 'Export data (JSON)',
     exportPremiumSuffix: '· Premium'
   },
-  share: { button: "Share today's vibe 📤" }
+  share: { button: "Share today's vibe 📤" },
+  daily: {
+    englishTitle: 'Phrase of the day',
+    fortuneTitle: "Today's fortune",
+    lottoLabel: "Today's lucky numbers",
+    lottoDisclaimer: '* For fun only — not real lottery numbers.',
+    zodiacPrompt: 'Add your birthday to see your zodiac fortune',
+    mbtiPrompt: 'Add your MBTI to see a daily one-liner'
+  },
+  profile: {
+    title: 'Profile',
+    birthdayLabel: 'Birthday (for zodiac fortune)',
+    mbtiLabel: 'MBTI',
+    mbtiPlaceholder: 'Not set',
+    save: 'Save',
+    saved: 'Saved! ✅'
+  }
 }
 
 const ja: Dict = {
@@ -277,7 +325,23 @@ const ja: Dict = {
     exportButton: 'データ書き出し(JSON)',
     exportPremiumSuffix: '・プレミアム'
   },
-  share: { button: '今日のバイブを共有 📤' }
+  share: { button: '今日のバイブを共有 📤' },
+  daily: {
+    englishTitle: '今日の英語ひとこと',
+    fortuneTitle: '今日の運勢',
+    lottoLabel: '今日のラッキーナンバー',
+    lottoDisclaimer: '※ 楽しみ用です。実際の宝くじの当選番号ではありません。',
+    zodiacPrompt: '誕生日を入力すると星座の運勢が見られます',
+    mbtiPrompt: 'MBTIを入力すると今日のひとことが見られます'
+  },
+  profile: {
+    title: 'プロフィール',
+    birthdayLabel: '誕生日(星座占い用)',
+    mbtiLabel: 'MBTI',
+    mbtiPlaceholder: '未設定',
+    save: '保存',
+    saved: '保存しました! ✅'
+  }
 }
 
 const dictionaries: Record<Lang, Dict> = { ko, en, ja }

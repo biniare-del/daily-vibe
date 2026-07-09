@@ -1,8 +1,10 @@
 import type { EntryMap, VibeEntry } from './types'
+import type { MbtiType } from './content/mbti'
 
 const ENTRIES_KEY = 'daily-vibe:entries'
 const PREMIUM_KEY = 'daily-vibe:premium'
 const REMINDER_KEY = 'daily-vibe:reminder'
+const PROFILE_KEY = 'daily-vibe:profile'
 
 export interface ReminderSettings {
   enabled: boolean
@@ -10,6 +12,11 @@ export interface ReminderSettings {
 }
 
 const DEFAULT_REMINDER: ReminderSettings = { enabled: false, time: '20:00' }
+
+export interface Profile {
+  birthday?: string // "YYYY-MM-DD"
+  mbti?: MbtiType
+}
 
 export function todayKey(d = new Date()): string {
   const y = d.getFullYear()
@@ -71,4 +78,17 @@ export function getReminderSettings(): ReminderSettings {
 
 export function setReminderSettings(settings: ReminderSettings): void {
   localStorage.setItem(REMINDER_KEY, JSON.stringify(settings))
+}
+
+export function getProfile(): Profile {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY)
+    return raw ? (JSON.parse(raw) as Profile) : {}
+  } catch {
+    return {}
+  }
+}
+
+export function setProfile(profile: Profile): void {
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile))
 }
