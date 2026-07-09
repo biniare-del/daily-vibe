@@ -84,6 +84,15 @@ export interface Dict {
     save: string
     saved: string
   }
+  cloud: {
+    title: string
+    notConfigured: string
+    signedOutDescription: string
+    loginButton: string
+    logoutButton: string
+    syncing: string
+    signedInAs: (email: string) => string
+  }
 }
 
 const ko: Dict = {
@@ -169,6 +178,15 @@ const ko: Dict = {
     mbtiPlaceholder: '선택 안 함',
     save: '저장하기',
     saved: '저장됐어요! ✅'
+  },
+  cloud: {
+    title: '클라우드 백업',
+    notConfigured: '클라우드 백업이 아직 설정되지 않았어요.',
+    signedOutDescription: '구글로 로그인하면 기기를 바꿔도 기록이 유지돼요.',
+    loginButton: '구글로 로그인',
+    logoutButton: '로그아웃',
+    syncing: '동기화 중...',
+    signedInAs: (email) => `${email} 로 백업 중`
   }
 }
 
@@ -255,6 +273,15 @@ const en: Dict = {
     mbtiPlaceholder: 'Not set',
     save: 'Save',
     saved: 'Saved! ✅'
+  },
+  cloud: {
+    title: 'Cloud backup',
+    notConfigured: 'Cloud backup isn\'t configured yet.',
+    signedOutDescription: 'Sign in with Google to keep your entries when you switch devices.',
+    loginButton: 'Sign in with Google',
+    logoutButton: 'Sign out',
+    syncing: 'Syncing...',
+    signedInAs: (email) => `Backed up as ${email}`
   }
 }
 
@@ -341,6 +368,15 @@ const ja: Dict = {
     mbtiPlaceholder: '未設定',
     save: '保存',
     saved: '保存しました! ✅'
+  },
+  cloud: {
+    title: 'クラウドバックアップ',
+    notConfigured: 'クラウドバックアップはまだ設定されていません。',
+    signedOutDescription: 'Googleでログインすると、機種変更しても記録が保持されます。',
+    loginButton: 'Googleでログイン',
+    logoutButton: 'ログアウト',
+    syncing: '同期中...',
+    signedInAs: (email) => `${email} でバックアップ中`
   }
 }
 

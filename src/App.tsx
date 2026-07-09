@@ -9,6 +9,7 @@ import ReminderSettingsPanel from './components/ReminderSettings'
 import DailyEnglishCard from './components/DailyEnglishCard'
 import FortuneCard from './components/FortuneCard'
 import ProfileSettings from './components/ProfileSettings'
+import CloudBackup from './components/CloudBackup'
 import Card from './components/Card'
 import AmbientBackground from './components/AmbientBackground'
 import { FREE_HISTORY_DAYS } from './types'
@@ -27,6 +28,8 @@ import {
 import { maybeShowReminder } from './notifications'
 import { shareEntry } from './share'
 import { useI18n } from './i18n'
+import type { CloudUser } from './cloudSync'
+import { onAuthChange, pushEntry, syncEntries } from './cloudSync'
 
 type Tab = 'today' | 'history' | 'report' | 'settings'
 
@@ -43,6 +46,8 @@ function App() {
   const [premium, setPremiumState] = useState(isPremium())
   const [tab, setTab] = useState<Tab>('today')
   const [profile, setProfileState] = useState(getProfile())
+  const [cloudUser, setCloudUser] = useState<CloudUser | null>(null)
+  const [syncing, setSyncing] = useState(false)
 
   const streak = useMemo(() => calcStreak(entries), [entries])
   const totalEntries = useMemo(() => sortedDates(entries).length, [entries])
@@ -50,8 +55,10 @@ function App() {
   const todayEntry = entries[today]
 
   const handleSave = (mood: number, energy: number, note: string, tags: TagId[], photo?: string) => {
-    const next = saveEntry({ date: today, mood, energy, note, tags, photo, createdAt: Date.now() })
+    const entry = { date: today, mood, energy, note, tags, photo, createdAt: Date.now() }
+    const next = saveEntry(entry)
     setEntries({ ...next })
+    if (cloudUser) pushEntry(cloudUser.id, entry)
   }
 
   const handleUnlock = () => {
@@ -78,6 +85,19 @@ function App() {
     if (reminder.enabled) {
       maybeShowReminder(!!todayEntry, reminder.time)
     }
+  }, [])
+
+  useEffect(() => {
+    const unsubscribe = onAuthChange((user) => {
+      setCloudUser(user)
+      if (user) {
+        setSyncing(true)
+        syncEntries(user.id)
+          .then((merged) => setEntries({ ...merged }))
+          .finally(() => setSyncing(false))
+      }
+    })
+    return unsubscribe
   }, [])
 
   const activeIndex = TABS.findIndex((item) => item.key === tab)
@@ -162,6 +182,7 @@ function App() {
                   {premium ? t.settings.premiumActive : t.settings.freeActive}
                 </p>
               </Card>
+              <CloudBackup user={cloudUser} syncing={syncing} />
               <ReminderSettingsPanel initial={getReminderSettings()} />
               <ProfileSettings initial={profile} onSave={setProfileState} />
               <button

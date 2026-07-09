@@ -41,6 +41,10 @@ export function saveEntry(entry: VibeEntry): EntryMap {
   return all
 }
 
+export function saveAllEntries(entries: EntryMap): void {
+  localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries))
+}
+
 export function isPremium(): boolean {
   return localStorage.getItem(PREMIUM_KEY) === 'true'
 }
