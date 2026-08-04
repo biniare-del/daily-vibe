@@ -49,10 +49,13 @@ export async function generateShareImage(entry: VibeEntry): Promise<Blob> {
   ctx.font = '600 48px sans-serif'
   ctx.fillText(entry.date, size / 2, 600)
 
-  if (entry.tags?.length) {
+  const badges = [entry.exercised ? '🏃 운동' : null, entry.expenseAmount ? `💰 ${Math.round(entry.expenseAmount).toLocaleString()}원` : null].filter(
+    Boolean
+  )
+  if (badges.length > 0) {
     ctx.font = '400 34px sans-serif'
     ctx.fillStyle = 'rgba(255,255,255,0.7)'
-    ctx.fillText(entry.tags.join(' · '), size / 2, 670)
+    ctx.fillText(badges.join('   '), size / 2, 670)
     ctx.fillStyle = 'white'
   }
 

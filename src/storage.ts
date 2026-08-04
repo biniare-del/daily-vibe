@@ -2,7 +2,6 @@ import type { EntryMap, VibeEntry } from './types'
 import type { MbtiType } from './content/mbti'
 
 const ENTRIES_KEY = 'daily-vibe:entries'
-const PREMIUM_KEY = 'daily-vibe:premium'
 const REMINDER_KEY = 'daily-vibe:reminder'
 const PROFILE_KEY = 'daily-vibe:profile'
 
@@ -43,14 +42,6 @@ export function saveEntry(entry: VibeEntry): EntryMap {
 
 export function saveAllEntries(entries: EntryMap): void {
   localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries))
-}
-
-export function isPremium(): boolean {
-  return localStorage.getItem(PREMIUM_KEY) === 'true'
-}
-
-export function setPremium(value: boolean): void {
-  localStorage.setItem(PREMIUM_KEY, String(value))
 }
 
 export function calcStreak(entries: EntryMap): number {

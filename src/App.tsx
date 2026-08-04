@@ -3,7 +3,7 @@ import CheckIn from './components/CheckIn'
 import Streak from './components/Streak'
 import HistoryHeatmap from './components/HistoryHeatmap'
 import MonthlyReport from './components/MonthlyReport'
-import PremiumPaywall from './components/PremiumPaywall'
+import RoastCard from './components/RoastCard'
 import WeeklySummary from './components/WeeklySummary'
 import ReminderSettingsPanel from './components/ReminderSettings'
 import DailyEnglishCard from './components/DailyEnglishCard'
@@ -12,19 +12,9 @@ import ProfileSettings from './components/ProfileSettings'
 import CloudBackup from './components/CloudBackup'
 import Card from './components/Card'
 import AmbientBackground from './components/AmbientBackground'
-import { FREE_HISTORY_DAYS } from './types'
-import type { TagId } from './types'
-import {
-  calcStreak,
-  getProfile,
-  getReminderSettings,
-  isPremium,
-  loadEntries,
-  saveEntry,
-  setPremium,
-  sortedDates,
-  todayKey
-} from './storage'
+import { HISTORY_DAYS } from './types'
+import type { VibeEntry } from './types'
+import { calcStreak, getProfile, getReminderSettings, loadEntries, saveEntry, sortedDates, todayKey } from './storage'
 import { maybeShowReminder } from './notifications'
 import { shareEntry } from './share'
 import { useI18n } from './i18n'
@@ -43,7 +33,6 @@ const TABS: { key: Tab; icon: string }[] = [
 function App() {
   const { t, flag, code, cycleLang } = useI18n()
   const [entries, setEntries] = useState(loadEntries())
-  const [premium, setPremiumState] = useState(isPremium())
   const [tab, setTab] = useState<Tab>('today')
   const [profile, setProfileState] = useState(getProfile())
   const [cloudUser, setCloudUser] = useState<CloudUser | null>(null)
@@ -54,16 +43,11 @@ function App() {
   const today = todayKey()
   const todayEntry = entries[today]
 
-  const handleSave = (mood: number, energy: number, note: string, tags: TagId[], photo?: string) => {
-    const entry = { date: today, mood, energy, note, tags, photo, createdAt: Date.now() }
+  const handleSave = (input: Omit<VibeEntry, 'date' | 'createdAt'>) => {
+    const entry: VibeEntry = { date: today, createdAt: Date.now(), ...input }
     const next = saveEntry(entry)
     setEntries({ ...next })
     if (cloudUser) pushEntry(cloudUser.id, entry)
-  }
-
-  const handleUnlock = () => {
-    setPremium(true)
-    setPremiumState(true)
   }
 
   const handleExport = () => {
@@ -156,43 +140,29 @@ function App() {
           )}
 
           {tab === 'history' && (
-            <>
-              <Card>
-                <HistoryHeatmap entries={entries} days={premium ? 365 : FREE_HISTORY_DAYS} />
-              </Card>
-              {!premium && <PremiumPaywall onUnlock={handleUnlock} />}
-            </>
+            <Card>
+              <HistoryHeatmap entries={entries} days={HISTORY_DAYS} />
+            </Card>
           )}
 
           {tab === 'report' && (
             <>
-              {premium ? (
-                <MonthlyReport entries={entries} />
-              ) : (
-                <PremiumPaywall onUnlock={handleUnlock} />
-              )}
+              <RoastCard entries={entries} />
+              <MonthlyReport entries={entries} />
             </>
           )}
 
           {tab === 'settings' && (
             <>
-              <Card>
-                <p className="text-sm font-medium">{t.settings.membership}</p>
-                <p className="mt-1 text-xs text-white/50">
-                  {premium ? t.settings.premiumActive : t.settings.freeActive}
-                </p>
-              </Card>
               <CloudBackup user={cloudUser} syncing={syncing} />
               <ReminderSettingsPanel initial={getReminderSettings()} />
               <ProfileSettings initial={profile} onSave={setProfileState} />
               <button
                 onClick={handleExport}
-                disabled={!premium}
-                className="rounded-2xl border border-white/10 bg-white/[0.06] py-3 text-sm font-medium backdrop-blur-xl transition disabled:opacity-30"
+                className="rounded-2xl border border-white/10 bg-white/[0.06] py-3 text-sm font-medium backdrop-blur-xl transition active:scale-95"
               >
-                {t.settings.exportButton} {!premium && t.settings.exportPremiumSuffix}
+                {t.settings.exportButton}
               </button>
-              {!premium && <PremiumPaywall onUnlock={handleUnlock} />}
             </>
           )}
         </div>

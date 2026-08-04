@@ -44,7 +44,9 @@ interface EntryRow {
   mood: number
   energy: number
   note: string | null
-  tags: string[] | null
+  exercised: boolean | null
+  expense_amount: number | null
+  expense_note: string | null
   photo: string | null
   created_at: number
 }
@@ -55,7 +57,9 @@ function rowToEntry(row: EntryRow): VibeEntry {
     mood: row.mood,
     energy: row.energy,
     note: row.note ?? '',
-    tags: (row.tags ?? []) as VibeEntry['tags'],
+    exercised: row.exercised ?? false,
+    expenseAmount: row.expense_amount ?? 0,
+    expenseNote: row.expense_note ?? '',
     photo: row.photo ?? undefined,
     createdAt: row.created_at
   }
@@ -68,7 +72,9 @@ function entryToRow(userId: string, entry: VibeEntry) {
     mood: entry.mood,
     energy: entry.energy,
     note: entry.note,
-    tags: entry.tags,
+    exercised: entry.exercised,
+    expense_amount: entry.expenseAmount,
+    expense_note: entry.expenseNote,
     photo: entry.photo ?? null,
     created_at: entry.createdAt
   }

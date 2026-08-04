@@ -1,4 +1,4 @@
-import type { EntryMap, TagId, VibeEntry } from './types'
+import type { EntryMap, VibeEntry } from './types'
 import { todayKey } from './storage'
 
 function entriesInLastDays(entries: EntryMap, days: number, offsetDays = 0): VibeEntry[] {
@@ -49,15 +49,24 @@ export function getMoodByWeekday(entries: EntryMap): (number | null)[] {
   return buckets.map((b) => avg(b))
 }
 
-export function getMoodByTag(entries: EntryMap): { tagId: TagId; avgMood: number; count: number }[] {
-  const buckets = new Map<TagId, number[]>()
-  Object.values(entries).forEach((e) => {
-    ;(e.tags ?? []).forEach((tagId) => {
-      if (!buckets.has(tagId)) buckets.set(tagId, [])
-      buckets.get(tagId)!.push(e.mood)
-    })
-  })
-  return Array.from(buckets.entries())
-    .map(([tagId, moods]) => ({ tagId, avgMood: avg(moods) ?? 0, count: moods.length }))
-    .sort((a, b) => b.count - a.count)
+export function getWeeklyExerciseCount(entries: EntryMap): number {
+  return entriesInLastDays(entries, 7, 0).filter((e) => e.exercised).length
+}
+
+export function getWeeklySpending(entries: EntryMap): number {
+  return entriesInLastDays(entries, 7, 0).reduce((sum, e) => sum + (e.expenseAmount || 0), 0)
+}
+
+export function getAvgDailySpending(entries: EntryMap): number {
+  const all = Object.values(entries)
+  if (all.length === 0) return 0
+  const total = all.reduce((sum, e) => sum + (e.expenseAmount || 0), 0)
+  return total / all.length
+}
+
+export function getMonthlySpending(entries: EntryMap, date = new Date()): number {
+  const prefix = todayKey(date).slice(0, 7) // YYYY-MM
+  return Object.values(entries)
+    .filter((e) => e.date.startsWith(prefix))
+    .reduce((sum, e) => sum + (e.expenseAmount || 0), 0)
 }

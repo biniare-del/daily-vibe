@@ -4,7 +4,7 @@ import type { ZodiacInfo, ZodiacKey } from './content/zodiac'
 import { MBTI_FORTUNES } from './content/mbti'
 import type { MbtiType } from './content/mbti'
 
-function dayOfYear(date: Date): number {
+export function dayOfYear(date: Date): number {
   const start = new Date(date.getFullYear(), 0, 0)
   const diff = date.getTime() - start.getTime()
   return Math.floor(diff / 86400000)

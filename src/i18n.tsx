@@ -13,9 +13,12 @@ export interface Dict {
   checkin: {
     moodQuestion: string
     energyQuestion: string
-    tagQuestion: string
     noteLabel: string
     notePlaceholder: string
+    exerciseQuestion: string
+    expenseTitle: string
+    expenseAmountPlaceholder: string
+    expenseNotePlaceholder: string
     photoLabel: string
     photoAlt: string
     photoRemove: string
@@ -24,7 +27,6 @@ export interface Dict {
     saved: string
   }
   moodLabels: [string, string, string, string, string]
-  tags: [string, string, string, string, string, string, string, string]
   weekdays: [string, string, string, string, string, string, string]
   streak: { streakLabel: string; totalLabel: string }
   weekly: {
@@ -43,15 +45,11 @@ export interface Dict {
     moodDistribution: string
     bestDay: string
     moodByWeekday: string
-    moodByTag: string
     times: string
-  }
-  paywall: {
-    title: string
-    perks: [string, string, string, string]
-    price: string
-    ctaDemo: string
-    disclaimer: string
+    weeklyExercise: string
+    weeklySpending: string
+    avgSpending: string
+    monthlySpending: string
   }
   reminder: {
     title: string
@@ -61,11 +59,7 @@ export interface Dict {
     footnote: string
   }
   settings: {
-    membership: string
-    premiumActive: string
-    freeActive: string
     exportButton: string
-    exportPremiumSuffix: string
   }
   share: { button: string }
   daily: {
@@ -93,27 +87,40 @@ export interface Dict {
     syncing: string
     signedInAs: (email: string) => string
   }
+  roast: {
+    title: string
+    noData: string[]
+    noLow: string[]
+    noOk: string[]
+    someLow: string[]
+    someOk: string[]
+    goodLow: string[]
+    goodOk: string[]
+    highSpend: string[]
+  }
 }
 
 const ko: Dict = {
   appName: '데일리바이브 ✨',
-  appTagline: '오늘의 기분과 에너지를 기록해보세요',
+  appTagline: '오늘 하루를 짧게 기록해보세요',
   nav: { today: '오늘', history: '기록', report: '리포트', settings: '설정' },
   checkin: {
-    moodQuestion: '오늘 기분은 어때요?',
+    moodQuestion: '오늘 기분이 어땠나요?',
     energyQuestion: '에너지 레벨은요?',
-    tagQuestion: '오늘에 태그를 붙여볼까요? (선택)',
-    noteLabel: '한 줄 메모 (선택)',
+    noteLabel: '한 줄 일기',
     notePlaceholder: '오늘 있었던 일을 짧게 남겨보세요',
+    exerciseQuestion: '오늘 운동했나요?',
+    expenseTitle: '오늘의 지출',
+    expenseAmountPlaceholder: '지출 금액',
+    expenseNotePlaceholder: '어디에 썼나요?',
     photoLabel: '사진 한 장 (선택)',
     photoAlt: '오늘의 사진',
     photoRemove: '사진 삭제',
-    saveDefault: '오늘의 바이브 저장하기',
+    saveDefault: '오늘의 일기 저장하기',
     saveEdit: '오늘 기록 수정하기',
     saved: '저장됐어요! ✅'
   },
-  moodLabels: ['힘들어요', '별로예요', '그저그래요', '좋아요', '최고예요'],
-  tags: ['운동', '일/공부', '친구', '가족', '휴식', '연애', '건강', '기타'],
+  moodLabels: ['힘들었어요', '별로였어요', '그저그랬어요', '좋았어요', '최고였어요'],
   weekdays: ['일', '월', '화', '수', '목', '금', '토'],
   streak: { streakLabel: '연속 기록일', totalLabel: '총 기록 수' },
   weekly: {
@@ -126,26 +133,17 @@ const ko: Dict = {
   },
   history: { recentDays: (n) => `최근 ${n}일` },
   report: {
-    empty: '아직 기록이 없어요. 체크인을 시작해보세요!',
+    empty: '아직 기록이 없어요. 오늘 일기부터 남겨보세요!',
     avgMood: '평균 기분',
     avgEnergy: '평균 에너지',
     moodDistribution: '기분 분포',
     bestDay: '최고의 하루',
     moodByWeekday: '요일별 평균 기분',
-    moodByTag: '태그별 평균 기분',
-    times: '회'
-  },
-  paywall: {
-    title: '데일리바이브 프리미엄',
-    perks: [
-      '전체 기록 히스토리 무제한 열람',
-      '월간 리포트 · 기분 트렌드 분석',
-      '데이터 내보내기 (JSON 백업)',
-      '커스텀 리마인더 시간 설정'
-    ],
-    price: '월 2,900원 · 언제든 해지 가능',
-    ctaDemo: '프리미엄 체험하기 (데모)',
-    disclaimer: '* 결제 연동 전 데모 버전입니다. 실제 서비스에는 Stripe/앱스토어 결제가 연결됩니다.'
+    times: '회',
+    weeklyExercise: '주간 운동 횟수',
+    weeklySpending: '주간 지출',
+    avgSpending: '일 평균 지출',
+    monthlySpending: '이번 달 지출'
   },
   reminder: {
     title: '매일 리마인더',
@@ -156,13 +154,9 @@ const ko: Dict = {
       '* 앱이 열려 있을 때 기준으로 확인하는 방식이에요. 앱을 완전히 꺼도 알림이 오게 하려면 서버 기반 푸시(Web Push) 연동이 필요해요.'
   },
   settings: {
-    membership: '멤버십',
-    premiumActive: '프리미엄 이용 중 ✨',
-    freeActive: '무료 플랜 이용 중',
-    exportButton: '데이터 내보내기 (JSON)',
-    exportPremiumSuffix: '· 프리미엄'
+    exportButton: '데이터 내보내기 (JSON)'
   },
-  share: { button: '오늘의 바이브 공유하기 📤' },
+  share: { button: '오늘의 일기 공유하기 📤' },
   daily: {
     englishTitle: '오늘의 영어 한마디',
     fortuneTitle: '오늘의 운세',
@@ -187,28 +181,72 @@ const ko: Dict = {
     logoutButton: '로그아웃',
     syncing: '동기화 중...',
     signedInAs: (email) => `${email} 로 백업 중`
+  },
+  roast: {
+    title: '이번 주 한마디',
+    noData: [
+      '아직 이번 주 기록이 없어요. 일단 오늘부터 남겨봐요.',
+      '기록이 없으면 저도 할 말이 없어요. 오늘 하나 써보세요.'
+    ],
+    noLow: [
+      '이번 주 운동 0번, 기분도 바닥이네요. 몸을 움직이면 기분도 따라 움직여요.',
+      '운동은 안 하고 기분 탓만 하고 계신 건 아니죠?',
+      '운동 기록이 없어요. 우울할 자격은 충분한데, 원인 제공도 본인 몫이에요.'
+    ],
+    noOk: [
+      '운동은 0번인데 기분은 나쁘지 않네요. 다음 주엔 몸도 좀 챙겨봐요.',
+      '기분은 괜찮지만 운동 기록이 텅 비었어요. 오래는 못 갈 수도 있어요.',
+      '지금은 버티고 있지만, 운동 없이 이 컨디션이 계속될 거란 보장은 없어요.'
+    ],
+    someLow: [
+      '운동은 하고 있는데 기분은 아직이네요. 조금만 더 버텨봐요.',
+      '노력은 하고 있어요. 결과가 더디게 오는 것뿐이에요.',
+      '운동만으로 기분이 다 해결되진 않아요. 그래도 계속하는 게 맞아요.'
+    ],
+    someOk: [
+      '운동도 어느 정도 하고 기분도 나쁘지 않아요. 나쁘지 않은 한 주예요.',
+      '딱 무난한 한 주네요. 그거면 충분해요.',
+      '이 정도면 준수해요. 더 잘하려고 애쓰지 않아도 돼요.'
+    ],
+    goodLow: [
+      '운동은 열심히 했는데 기분은 안 따라오네요. 다른 데 원인이 있을 수도 있어요.',
+      '몸은 챙겼는데 마음이 안 따라오는 한 주였네요.',
+      '운동량은 충분해요. 이제 다른 걸 좀 돌아볼 차례예요.'
+    ],
+    goodOk: [
+      '운동도 하고 기분도 좋고, 이번 주는 제법 잘 살고 계시네요.',
+      '이 페이스 유지만 해도 충분해요.',
+      '몸도 마음도 균형 잡힌 한 주였어요. 그대로 가봐요.'
+    ],
+    highSpend: [
+      '이번 주 지출이 꽤 크네요. 그만한 가치가 있었길 바라요.',
+      '지갑이 이번 주 제일 고생했겠어요.',
+      '돈을 많이 쓴 주에는 꼭 이유를 하나쯤 남겨두세요, 나중에 후회 안 하게.'
+    ]
   }
 }
 
 const en: Dict = {
   appName: 'Daily Vibe ✨',
-  appTagline: "Track today's mood and energy",
+  appTagline: 'A short daily diary',
   nav: { today: 'Today', history: 'History', report: 'Report', settings: 'Settings' },
   checkin: {
-    moodQuestion: 'How are you feeling today?',
+    moodQuestion: 'How was your day?',
     energyQuestion: "What's your energy level?",
-    tagQuestion: 'Add a tag? (optional)',
-    noteLabel: 'Quick note (optional)',
+    noteLabel: 'One-line diary',
     notePlaceholder: 'Jot down something about today',
+    exerciseQuestion: 'Did you exercise today?',
+    expenseTitle: "Today's spending",
+    expenseAmountPlaceholder: 'Amount spent',
+    expenseNotePlaceholder: 'What was it for?',
     photoLabel: 'Add a photo (optional)',
     photoAlt: "Today's photo",
     photoRemove: 'Remove photo',
-    saveDefault: "Save today's vibe",
+    saveDefault: "Save today's diary",
     saveEdit: "Update today's entry",
     saved: 'Saved! ✅'
   },
   moodLabels: ['Rough', 'Meh', 'Okay', 'Good', 'Amazing'],
-  tags: ['Exercise', 'Work/Study', 'Friends', 'Family', 'Rest', 'Love', 'Health', 'Other'],
   weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   streak: { streakLabel: 'Day streak', totalLabel: 'Total entries' },
   weekly: {
@@ -221,26 +259,17 @@ const en: Dict = {
   },
   history: { recentDays: (n) => `Last ${n} days` },
   report: {
-    empty: 'No entries yet. Start your first check-in!',
+    empty: 'No entries yet. Start with today!',
     avgMood: 'Avg mood',
     avgEnergy: 'Avg energy',
     moodDistribution: 'Mood distribution',
     bestDay: 'Best day',
     moodByWeekday: 'Mood by weekday',
-    moodByTag: 'Mood by tag',
-    times: 'times'
-  },
-  paywall: {
-    title: 'Daily Vibe Premium',
-    perks: [
-      'Unlimited full history',
-      'Monthly report & mood trends',
-      'Export data (JSON backup)',
-      'Custom reminder time'
-    ],
-    price: '$2.99/mo · cancel anytime',
-    ctaDemo: 'Try Premium (demo)',
-    disclaimer: '* Demo unlock before payments are wired up. Real billing will use Stripe/app store.'
+    times: 'times',
+    weeklyExercise: 'Exercise this week',
+    weeklySpending: 'Spending this week',
+    avgSpending: 'Avg daily spending',
+    monthlySpending: 'Spending this month'
   },
   reminder: {
     title: 'Daily reminder',
@@ -251,13 +280,9 @@ const en: Dict = {
       '* Only works while the app is open. True background push needs a server (Web Push).'
   },
   settings: {
-    membership: 'Membership',
-    premiumActive: 'Premium active ✨',
-    freeActive: 'Free plan',
-    exportButton: 'Export data (JSON)',
-    exportPremiumSuffix: '· Premium'
+    exportButton: 'Export data (JSON)'
   },
-  share: { button: "Share today's vibe 📤" },
+  share: { button: "Share today's diary 📤" },
   daily: {
     englishTitle: 'Phrase of the day',
     fortuneTitle: "Today's fortune",
@@ -282,28 +307,72 @@ const en: Dict = {
     logoutButton: 'Sign out',
     syncing: 'Syncing...',
     signedInAs: (email) => `Backed up as ${email}`
+  },
+  roast: {
+    title: 'This week, straight talk',
+    noData: [
+      "No entries yet this week. Start with today.",
+      "Can't say much with no data. Write one today."
+    ],
+    noLow: [
+      "Zero workouts this week, and your mood shows it. Moving your body tends to move your mood too.",
+      "Blaming your mood while skipping every workout, are we?",
+      "No exercise logged. Fair enough to feel low — but you had a hand in that."
+    ],
+    noOk: [
+      "Zero workouts, but mood's holding up. Might want to move a bit next week.",
+      "Mood's fine, but your exercise log is empty. That won't last forever.",
+      "You're coasting fine for now, but there's no guarantee it holds without moving."
+    ],
+    someLow: [
+      "You're putting in some effort, mood just hasn't caught up. Stick with it.",
+      "The effort is there. Results are just running behind.",
+      "Exercise alone won't fix everything, but keep going anyway."
+    ],
+    someOk: [
+      "Some exercise, decent mood. Not a bad week.",
+      "Perfectly average week. That's plenty.",
+      "This is solid. No need to push harder."
+    ],
+    goodLow: [
+      "You worked out plenty, but your mood didn't follow. Might be something else going on.",
+      "Body's taken care of, mind didn't quite catch up this week.",
+      "Exercise is covered. Time to look at what else is going on."
+    ],
+    goodOk: [
+      "Exercising and feeling good — you're living pretty well this week.",
+      "Keep this pace and you're set.",
+      "Body and mind both in balance this week. Stay on it."
+    ],
+    highSpend: [
+      "You spent a lot this week. Hope it was worth it.",
+      "Your wallet had the roughest week of anyone.",
+      "On big-spending weeks, always jot down why — future you will thank you."
+    ]
   }
 }
 
 const ja: Dict = {
   appName: 'デイリーバイブ ✨',
-  appTagline: '今日の気分とエネルギーを記録しよう',
+  appTagline: '今日一日を短く記録しよう',
   nav: { today: '今日', history: '記録', report: 'レポート', settings: '設定' },
   checkin: {
-    moodQuestion: '今日の気分はどうですか?',
+    moodQuestion: '今日の気分はどうでしたか?',
     energyQuestion: 'エネルギーレベルは?',
-    tagQuestion: 'タグを付けますか?(任意)',
-    noteLabel: 'ひとことメモ(任意)',
+    noteLabel: '一行日記',
     notePlaceholder: '今日あったことを短く残してみましょう',
+    exerciseQuestion: '今日運動しましたか?',
+    expenseTitle: '今日の支出',
+    expenseAmountPlaceholder: '支出金額',
+    expenseNotePlaceholder: '何に使いましたか?',
     photoLabel: '写真を1枚(任意)',
     photoAlt: '今日の写真',
     photoRemove: '写真を削除',
-    saveDefault: '今日のバイブを保存',
+    saveDefault: '今日の日記を保存',
     saveEdit: '今日の記録を更新',
     saved: '保存しました! ✅'
   },
-  moodLabels: ['つらい', 'いまいち', 'ふつう', 'いいね', '最高'],
-  tags: ['運動', '仕事/勉強', '友達', '家族', '休息', '恋愛', '健康', 'その他'],
+  moodLabels: ['つらかった', 'いまいちだった', 'ふつうだった', 'よかった', '最高だった'],
   weekdays: ['日', '月', '火', '水', '木', '金', '土'],
   streak: { streakLabel: '連続記録日数', totalLabel: '総記録数' },
   weekly: {
@@ -316,26 +385,17 @@ const ja: Dict = {
   },
   history: { recentDays: (n) => `直近${n}日間` },
   report: {
-    empty: 'まだ記録がありません。チェックインを始めましょう!',
+    empty: 'まだ記録がありません。今日から始めましょう!',
     avgMood: '平均気分',
     avgEnergy: '平均エネルギー',
     moodDistribution: '気分の分布',
     bestDay: 'ベストな日',
     moodByWeekday: '曜日別の平均気分',
-    moodByTag: 'タグ別の平均気分',
-    times: '回'
-  },
-  paywall: {
-    title: 'デイリーバイブ プレミアム',
-    perks: [
-      '全履歴を無制限に閲覧',
-      '月間レポート・気分トレンド分析',
-      'データ書き出し(JSONバックアップ)',
-      'リマインダー時間のカスタム設定'
-    ],
-    price: '月額390円・いつでも解約可能',
-    ctaDemo: 'プレミアムを試す(デモ)',
-    disclaimer: '※ 決済連携前のデモ版です。実際のサービスではStripe/アプリストア決済と連携します。'
+    times: '回',
+    weeklyExercise: '今週の運動回数',
+    weeklySpending: '今週の支出',
+    avgSpending: '1日の平均支出',
+    monthlySpending: '今月の支出'
   },
   reminder: {
     title: '毎日のリマインダー',
@@ -346,13 +406,9 @@ const ja: Dict = {
       '※ アプリを開いている時のみ動作します。完全なバックグラウンド通知にはサーバー側のプッシュ(Web Push)連携が必要です。'
   },
   settings: {
-    membership: 'メンバーシップ',
-    premiumActive: 'プレミアム利用中 ✨',
-    freeActive: '無料プラン利用中',
-    exportButton: 'データ書き出し(JSON)',
-    exportPremiumSuffix: '・プレミアム'
+    exportButton: 'データ書き出し(JSON)'
   },
-  share: { button: '今日のバイブを共有 📤' },
+  share: { button: '今日の日記を共有 📤' },
   daily: {
     englishTitle: '今日の英語ひとこと',
     fortuneTitle: '今日の運勢',
@@ -377,6 +433,45 @@ const ja: Dict = {
     logoutButton: 'ログアウト',
     syncing: '同期中...',
     signedInAs: (email) => `${email} でバックアップ中`
+  },
+  roast: {
+    title: '今週のひとこと',
+    noData: ['今週の記録がまだありません。今日から始めましょう。', '記録がないと何も言えません。今日1つ書いてみて。'],
+    noLow: [
+      '今週の運動0回、気分も低調ですね。体を動かせば気分も動きますよ。',
+      '運動はせずに気分のせいにしていませんか?',
+      '運動記録がありません。落ち込む理由は十分ですが、原因の一部は自分にもありますよ。'
+    ],
+    noOk: [
+      '運動は0回ですが気分は悪くないですね。来週は体も動かしてみて。',
+      '気分は大丈夫でも運動記録は空っぽです。ずっとは続かないかも。',
+      '今はなんとかなっていても、運動なしでこの調子が続く保証はありません。'
+    ],
+    someLow: [
+      '運動はしているのに気分はまだですね。もう少し頑張ってみて。',
+      '努力はしています。結果が遅れて来るだけです。',
+      '運動だけで気分が全部解決するわけではないけど、続ける価値はあります。'
+    ],
+    someOk: [
+      '運動もそこそこ、気分も悪くない。悪くない一週間です。',
+      'ちょうど無難な一週間ですね。それで十分です。',
+      'これくらいで上出来です。無理しなくて大丈夫。'
+    ],
+    goodLow: [
+      '運動は頑張ったのに気分はついてきませんでしたね。他に原因があるかも。',
+      '体はケアできたけど心が追いつかない一週間でした。',
+      '運動量は十分です。そろそろ他のことにも目を向ける番です。'
+    ],
+    goodOk: [
+      '運動もして気分も良い、なかなか良い一週間ですね。',
+      'このペースを維持するだけで十分です。',
+      '体も心もバランスの取れた一週間でした。そのまま続けて。'
+    ],
+    highSpend: [
+      '今週の支出はかなり大きいですね。それだけの価値があったと願います。',
+      '今週一番頑張ったのは財布かもしれません。',
+      '出費が多い週は理由を一つメモしておくと、後で後悔しませんよ。'
+    ]
   }
 }
 

@@ -1,12 +1,20 @@
 import { useRef, useState } from 'react'
-import { MOOD_EMOJI, ENERGY_EMOJI, TAG_IDS } from '../types'
-import type { TagId, VibeEntry } from '../types'
+import { MOOD_EMOJI, ENERGY_EMOJI } from '../types'
+import type { VibeEntry } from '../types'
 import { useI18n } from '../i18n'
 import Card from './Card'
 
 interface Props {
   existing?: VibeEntry
-  onSave: (mood: number, energy: number, note: string, tags: TagId[], photo?: string) => void
+  onSave: (entry: {
+    mood: number
+    energy: number
+    note: string
+    exercised: boolean
+    expenseAmount: number
+    expenseNote: string
+    photo?: string
+  }) => void
 }
 
 const MAX_PHOTO_DIMENSION = 640
@@ -38,14 +46,12 @@ export default function CheckIn({ existing, onSave }: Props) {
   const [mood, setMood] = useState(existing?.mood ?? 3)
   const [energy, setEnergy] = useState(existing?.energy ?? 3)
   const [note, setNote] = useState(existing?.note ?? '')
-  const [tags, setTags] = useState<TagId[]>(existing?.tags ?? [])
+  const [exercised, setExercised] = useState(existing?.exercised ?? false)
+  const [expenseAmount, setExpenseAmount] = useState(existing?.expenseAmount ? String(existing.expenseAmount) : '')
+  const [expenseNote, setExpenseNote] = useState(existing?.expenseNote ?? '')
   const [photo, setPhoto] = useState<string | undefined>(existing?.photo)
   const [saved, setSaved] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const toggleTag = (tagId: TagId) => {
-    setTags((prev) => (prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId]))
-  }
 
   const handlePhotoPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -55,7 +61,15 @@ export default function CheckIn({ existing, onSave }: Props) {
   }
 
   const handleSave = () => {
-    onSave(mood, energy, note, tags, photo)
+    onSave({
+      mood,
+      energy,
+      note,
+      exercised,
+      expenseAmount: Number(expenseAmount) || 0,
+      expenseNote,
+      photo
+    })
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
   }
@@ -97,26 +111,6 @@ export default function CheckIn({ existing, onSave }: Props) {
       </section>
 
       <section>
-        <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.tagQuestion}</h2>
-        <div className="flex flex-wrap gap-2">
-          {TAG_IDS.map((tagId, i) => (
-            <button
-              key={tagId}
-              onClick={() => toggleTag(tagId)}
-              className={`rounded-full border px-3 py-1.5 text-xs transition ${
-                tags.includes(tagId)
-                  ? 'border-vibe-400/50 bg-vibe-600/80 text-white shadow-[0_0_16px_-4px_rgba(139,92,246,0.6)]'
-                  : 'border-white/10 bg-white/[0.03] text-white/60'
-              }`}
-            >
-              {tags.includes(tagId) && <span className="mr-1">✓</span>}
-              {t.tags[i]}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section>
         <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.noteLabel}</h2>
         <textarea
           value={note}
@@ -126,6 +120,41 @@ export default function CheckIn({ existing, onSave }: Props) {
           placeholder={t.checkin.notePlaceholder}
           className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-sm outline-none placeholder:text-white/30 focus:border-vibe-400/50 focus:ring-1 focus:ring-vibe-400/50"
         />
+      </section>
+
+      <section className="flex items-center justify-between">
+        <h2 className="text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.exerciseQuestion}</h2>
+        <button
+          onClick={() => setExercised((v) => !v)}
+          className={`h-7 w-12 rounded-full transition ${exercised ? 'bg-vibe-600' : 'bg-white/10'}`}
+        >
+          <span
+            className={`block h-5 w-5 rounded-full bg-white transition ${exercised ? 'translate-x-6' : 'translate-x-1'}`}
+          />
+        </button>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-white/40">{t.checkin.expenseTitle}</h2>
+        <div className="flex gap-2">
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={expenseAmount}
+            onChange={(e) => setExpenseAmount(e.target.value)}
+            placeholder={t.checkin.expenseAmountPlaceholder}
+            className="w-1/3 rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-sm outline-none placeholder:text-white/30 focus:border-vibe-400/50 focus:ring-1 focus:ring-vibe-400/50"
+          />
+          <input
+            type="text"
+            value={expenseNote}
+            onChange={(e) => setExpenseNote(e.target.value)}
+            maxLength={60}
+            placeholder={t.checkin.expenseNotePlaceholder}
+            className="flex-1 rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-sm outline-none placeholder:text-white/30 focus:border-vibe-400/50 focus:ring-1 focus:ring-vibe-400/50"
+          />
+        </div>
       </section>
 
       <section>

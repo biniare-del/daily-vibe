@@ -1,12 +1,11 @@
-export const TAG_IDS = ['exercise', 'work', 'friends', 'family', 'rest', 'love', 'health', 'other'] as const
-export type TagId = (typeof TAG_IDS)[number]
-
 export interface VibeEntry {
   date: string // YYYY-MM-DD
   mood: number // 1-5
   energy: number // 1-5
   note: string
-  tags: TagId[]
+  exercised: boolean
+  expenseAmount: number
+  expenseNote: string
   photo?: string // data URL
   createdAt: number
 }
@@ -16,4 +15,4 @@ export type EntryMap = Record<string, VibeEntry>
 export const MOOD_EMOJI = ['😞', '😕', '😐', '🙂', '😄'] as const
 export const ENERGY_EMOJI = ['🔋', '🔋🔋', '🔋🔋🔋', '🔋🔋🔋🔋', '⚡️'] as const
 
-export const FREE_HISTORY_DAYS = 30
+export const HISTORY_DAYS = 365

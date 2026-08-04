@@ -1,11 +1,21 @@
 import type { EntryMap } from '../types'
-import { MOOD_EMOJI, TAG_IDS } from '../types'
-import { getMoodByTag, getMoodByWeekday } from '../stats'
+import { MOOD_EMOJI } from '../types'
+import {
+  getAvgDailySpending,
+  getMonthlySpending,
+  getMoodByWeekday,
+  getWeeklyExerciseCount,
+  getWeeklySpending
+} from '../stats'
 import { useI18n } from '../i18n'
 import Card from './Card'
 
 interface Props {
   entries: EntryMap
+}
+
+function formatWon(n: number): string {
+  return `${Math.round(n).toLocaleString()}원`
 }
 
 export default function MonthlyReport({ entries }: Props) {
@@ -21,7 +31,11 @@ export default function MonthlyReport({ entries }: Props) {
   const moodCounts = [0, 0, 0, 0, 0]
   all.forEach((e) => moodCounts[e.mood - 1]++)
   const byWeekday = getMoodByWeekday(entries)
-  const byTag = getMoodByTag(entries)
+
+  const weeklyExercise = getWeeklyExerciseCount(entries)
+  const weeklySpending = getWeeklySpending(entries)
+  const avgSpending = getAvgDailySpending(entries)
+  const monthlySpending = getMonthlySpending(entries)
 
   return (
     <div className="flex flex-col gap-4">
@@ -33,6 +47,28 @@ export default function MonthlyReport({ entries }: Props) {
         <Card className="text-center">
           <p className="text-2xl font-bold tracking-tight">{avgEnergy.toFixed(1)} / 5</p>
           <p className="mt-1 text-xs text-white/50">{t.report.avgEnergy}</p>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="text-center">
+          <p className="text-2xl font-bold tracking-tight">
+            {weeklyExercise}
+            {t.report.times}
+          </p>
+          <p className="mt-1 text-xs text-white/50">{t.report.weeklyExercise}</p>
+        </Card>
+        <Card className="text-center">
+          <p className="text-2xl font-bold tracking-tight">{formatWon(weeklySpending)}</p>
+          <p className="mt-1 text-xs text-white/50">{t.report.weeklySpending}</p>
+        </Card>
+        <Card className="text-center">
+          <p className="text-2xl font-bold tracking-tight">{formatWon(avgSpending)}</p>
+          <p className="mt-1 text-xs text-white/50">{t.report.avgSpending}</p>
+        </Card>
+        <Card className="text-center">
+          <p className="text-2xl font-bold tracking-tight">{formatWon(monthlySpending)}</p>
+          <p className="mt-1 text-xs text-white/50">{t.report.monthlySpending}</p>
         </Card>
       </div>
 
@@ -72,23 +108,6 @@ export default function MonthlyReport({ entries }: Props) {
           ))}
         </div>
       </Card>
-
-      {byTag.length > 0 && (
-        <Card>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">{t.report.moodByTag}</p>
-          <div className="flex flex-col gap-2">
-            {byTag.map(({ tagId, avgMood: tagAvg, count }) => (
-              <div key={tagId} className="flex items-center justify-between text-sm">
-                <span className="text-white/70">{t.tags[TAG_IDS.indexOf(tagId)]}</span>
-                <span className="text-white/40">
-                  {tagAvg.toFixed(1)} / 5 · {count}
-                  {t.report.times}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
     </div>
   )
 }
